@@ -1,0 +1,26 @@
+name: Export Node 22 ARM64
+on: [workflow_dispatch]
+
+jobs:
+  export_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3 # 允许在 Linux 环境下载并打包 ARM 镜像
+
+      - name: Pull ARM64 Image
+        run: |
+          # 明确指定架构为 linux/arm64
+          docker pull --platform linux/arm64 node:22-alpine
+          
+      - name: Save to TAR
+        run: |
+          # 将镜像导出为 tar 文件
+          docker save node:22-alpine > node_22_alpine_arm64.tar
+          
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-22-arm-bundle
+          path: node_22_alpine_arm64.tar
+          retention-days: 1
