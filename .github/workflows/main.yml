@@ -1,19 +1,23 @@
-name: Docker Save Image
-on: [workflow_dispatch] # 手动点击触发
+name: Export Node 23 AMD64
+on: [workflow_dispatch] # 允许手动点击按钮开始
 
 jobs:
-  build:
+  export_image:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull and Save Image
+      - name: Pull AMD64 Image
         run: |
-          # 强制拉取 AMD64 架构
-          docker pull --platform linux/amd64 node:22-alpine
-          # 将镜像保存为 tar 文件
-          docker save node:22-alpine > node-22-alpine-amd64.tar
+          # 明确拉取 node 23 的 alpine 版本，架构指定为 amd64
+          docker pull --platform linux/amd64 node:23-alpine
           
-      - name: Upload Artifact
+      - name: Save to TAR
+        run: |
+          # 将镜像导出为 tar 文件
+          docker save node:23-alpine > node_23_alpine_amd64.tar
+          
+      - name: Upload to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: node-image-tar
-          path: node-22-alpine-amd64.tar
+          name: node-23-bundle # 这是你下载时的压缩包名称
+          path: node_23_alpine_amd64.tar
+          retention-days: 1 # 下载完就失效，节省空间
