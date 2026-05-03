@@ -1,0 +1,19 @@
+name: Docker Save Image
+on: [workflow_dispatch] # 手动点击触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull and Save Image
+        run: |
+          # 强制拉取 AMD64 架构
+          docker pull --platform linux/amd64 node:22-alpine
+          # 将镜像保存为 tar 文件
+          docker save node:22-alpine > node-22-alpine-amd64.tar
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-image-tar
+          path: node-22-alpine-amd64.tar
