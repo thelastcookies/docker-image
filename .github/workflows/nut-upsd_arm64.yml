@@ -1,0 +1,23 @@
+name: Export NUT-UPSD ARM64
+on: [workflow_dispatch] # 允许手动点击按钮开始
+
+jobs:
+  export_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull ARM64 Image
+        run: |
+          # 明确拉取 nut-upsd，架构指定为 arm64
+          docker pull --platform linux/arm64 ghcr.io/jr0wdog/nut-upsd:latest
+          
+      - name: Save to TAR
+        run: |
+          # 将镜像导出为 tar 文件
+          docker save ghcr.io/jr0wdog/nut-upsd:latest > nut_upsd_arm64.tar
+          
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: nut-upsd-arm64-bundle # 下载时的压缩包名称
+          path: nut_upsd_arm64.tar
+          retention-days: 1 # 节省空间，1天后自动删除
