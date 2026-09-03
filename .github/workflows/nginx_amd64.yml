@@ -1,0 +1,23 @@
+name: Export Nginx Stable AMD64
+on: [workflow_dispatch] # 允许手动点击按钮开始
+
+jobs:
+  export_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull AMD64 Image
+        run: |
+          # 明确指定拉取 Nginx 稳定版 (stable)，架构为 amd64
+          docker pull --platform linux/amd64 nginx:stable
+          
+      - name: Save to TAR
+        run: |
+          # 将镜像导出为 tar 文件
+          docker save nginx:stable > nginx_stable_amd64.tar
+          
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: nginx-stable-amd64-bundle # 下载时的压缩包名称
+          path: nginx_stable_amd64.tar
+          retention-days: 1 # 1天后自动删除，节省空间
